@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
   const url = "https://api.xygeng.cn/one";
   const response = await fetch(url);

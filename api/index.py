@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, make_response
 import requests
 
 app = Flask(__name__)
@@ -11,14 +11,17 @@ def catch_all(path):
         url = "https://v1.hitokoto.cn/"
         res = requests.get(url).json()
         
-        # 最好返回 JSON 格式，更通用
-        response_data = {
-            "hitokoto": res.get("hitokoto", "获取失败"),
-            "from": res.get("from", "未知来源"),
-            "text": f'{res.get("hitokoto", "")}    ----{res.get("from", "")}'
-        }
+        # 获取一言内容
+        hitokoto_text = res.get("hitokoto", "获取一言失败")
         
-        return jsonify(response_data)
+        # 创建一个纯文本响应
+        response = make_response(hitokoto_text, 200)
+        response.mimetype = "text/plain; charset=utf-8"
+        return response
+        
     except Exception as e:
         # 增加错误处理
-        return jsonify({"error": str(e)}), 500
+        error_message = f"发生错误: {e}"
+        response = make_response(error_message, 500)
+        response.mimetype = "text/plain; charset=utf-8"
+        return response
